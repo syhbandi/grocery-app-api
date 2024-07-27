@@ -46,15 +46,17 @@ class ProductController extends Controller
         return new ProductResource($product);
     }
 
-    public function update(UpdateProductRequest $updateProductRequest, $id): ProductResource
+    public function update(UpdateProductRequest $updateProductRequest, $id)
     {
+        $data = $updateProductRequest->validated();
         $product = Product::find($id);
 
         if (!$product) {
             $this->notFound();
         }
 
-        $product->update($updateProductRequest->all());
+
+        $product->update($data);
 
         if ($updateProductRequest->has('category_ids')) {
             $product->categories()->sync($updateProductRequest->category_ids);
@@ -79,7 +81,7 @@ class ProductController extends Controller
     private function notFound()
     {
         throw new HttpResponseException(response()->json([
-            'message' => 'category not found',
+            'message' => 'Product not found',
         ], Response::HTTP_NOT_FOUND));
     }
 }
