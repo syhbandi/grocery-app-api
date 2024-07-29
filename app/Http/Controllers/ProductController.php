@@ -18,7 +18,13 @@ class ProductController extends Controller
         $size = $request->query('size', 10);
         $page = $request->query('page', 1);
 
-        $products = Product::with('categories')->paginate(page: $page, perPage: $size);
+        $query = Product::query();
+
+        if ($request->has('search')) {
+            $query->where('name', 'LIKE', '%' . $request->input('search') . '%');
+        }
+
+        $products = $query->with('categories')->paginate(page: $page, perPage: $size);
         return ProductResource::collection($products);
     }
 
