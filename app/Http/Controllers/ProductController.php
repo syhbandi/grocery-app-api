@@ -43,11 +43,9 @@ class ProductController extends Controller
         $product = new Product($storeProductRequest->all());
         $product->save();
 
-        if ($storeProductRequest->has('category_ids')) {
-            $product->categories()->sync($storeProductRequest->category_ids);
+        if ($storeProductRequest->has('categories')) {
+            $product->categories()->sync($storeProductRequest->categories);
         }
-
-        $product->categories()->sync($storeProductRequest->category_ids);
 
         return new ProductResource($product);
     }
@@ -64,8 +62,8 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        if ($updateProductRequest->has('category_ids')) {
-            $product->categories()->sync($updateProductRequest->category_ids);
+        if ($updateProductRequest->has('categories')) {
+            $product->categories()->sync($updateProductRequest->categories);
         }
 
         return new ProductResource($product);

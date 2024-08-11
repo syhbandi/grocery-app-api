@@ -30,7 +30,7 @@ class UpdateProductRequest extends FormRequest
             'price' => 'sometimes|required|numeric',
             'stock' => 'sometimes|required|integer',
             'image' => 'nullable',
-            'category_ids' => 'array|exists:categories,id'
+            'categories' => 'array|exists:categories,id'
         ];
     }
 

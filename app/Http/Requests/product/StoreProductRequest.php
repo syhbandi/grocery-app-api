@@ -31,7 +31,7 @@ class StoreProductRequest extends FormRequest
             'price' => 'required|numeric',
             'stock' => 'required|integer',
             'image' => 'nullable|string',
-            'category_ids' => 'exists:categories,id'
+            'categories' => 'exists:categories,id'
         ];
     }
 
