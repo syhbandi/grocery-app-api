@@ -23,7 +23,13 @@ class CategoryController extends Controller
         $size = $request->query('size', 10);
         $page = $request->query('page', 1);
 
-        $categories = Category::paginate(page: $page, perPage: $size);
+        $query = Category::query();
+
+        if ($request->has('search')) {
+            $query->where('name', 'LIKE', '%' . $request->input('search') . '%');
+        }
+
+        $categories = $request->has('no_paginate') ? $query->get() : $query->paginate(page: $page, perPage: $size);
         return CategoryResource::collection($categories);
     }
 
