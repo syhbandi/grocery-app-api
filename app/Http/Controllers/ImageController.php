@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ImageResource;
 use App\Models\Image;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
 class ImageController extends Controller
@@ -27,5 +30,27 @@ class ImageController extends Controller
         $image = Image::create(['url' => $path]);
 
         return response()->json($image, 201);
+    }
+
+    public function get(Request $request)
+    {
+        $query = Image::query();
+        $images = $query->orderBy('created_at', 'desc')->get();
+
+        return ImageResource::collection($images);
+    }
+
+    public function delete($id)
+    {
+        $image = Image::find($id);
+
+        if (!$image) {
+            throw new HttpResponseException(response()->json([
+                'message' => 'Image not found',
+            ], Response::HTTP_NOT_FOUND));
+        }
+
+        $image->delete();
+        return response()->json(['message' => 'Image deleted'])->status(Response::HTTP_OK);
     }
 }
