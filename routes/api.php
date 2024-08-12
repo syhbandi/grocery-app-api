@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
@@ -53,4 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // order
     Route::post('/order', [OrderController::class, 'store']);
     Route::get('/order', [OrderController::class, 'show']);
+
+    // image
+    Route::post('/upload', [ImageController::class, 'upload'])->middleware('ability:admin');
 });

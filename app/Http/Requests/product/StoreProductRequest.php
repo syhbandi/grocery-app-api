@@ -32,7 +32,8 @@ class StoreProductRequest extends FormRequest
             'stock' => 'required|integer',
             'unit' => 'required|string|max:255',
             'image' => 'nullable|string',
-            'categories' => 'exists:categories,id'
+            'categories' => 'exists:categories,id',
+            'images' => 'exists:images,id'
         ];
     }
 

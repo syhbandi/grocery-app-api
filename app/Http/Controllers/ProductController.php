@@ -24,13 +24,13 @@ class ProductController extends Controller
             $query->where('name', 'LIKE', '%' . $request->input('search') . '%');
         }
 
-        $products = $query->with('categories')->paginate(page: $page, perPage: $size);
+        $products = $query->with('categories')->with('images')->paginate(page: $page, perPage: $size);
         return ProductResource::collection($products);
     }
 
     public function get($id)
     {
-        $product = Product::with('categories')->find($id);
+        $product = Product::with('categories')->with('images')->find($id);
 
         if (!$product) {
             $this->notFound();
@@ -45,6 +45,10 @@ class ProductController extends Controller
 
         if ($storeProductRequest->has('categories')) {
             $product->categories()->sync($storeProductRequest->categories);
+        }
+
+        if ($storeProductRequest->has('images')) {
+            $product->images()->sync($storeProductRequest->images);
         }
 
         return new ProductResource($product);
@@ -64,6 +68,10 @@ class ProductController extends Controller
 
         if ($updateProductRequest->has('categories')) {
             $product->categories()->sync($updateProductRequest->categories);
+        }
+
+        if ($updateProductRequest->has('images')) {
+            $product->images()->sync($updateProductRequest->images);
         }
 
         return new ProductResource($product);
