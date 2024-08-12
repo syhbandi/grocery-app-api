@@ -17,7 +17,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 8, 2);
             $table->integer('stock');
-            $table->integer('unit');
+            $table->string('unit');
             $table->string('image')->nullable();
             $table->timestamps();
         });
