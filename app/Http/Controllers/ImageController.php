@@ -7,6 +7,7 @@ use App\Models\Image;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ImageController extends Controller
@@ -29,7 +30,7 @@ class ImageController extends Controller
         // Buat instance Photo di database
         $image = Image::create(['url' => $path]);
 
-        return response()->json($image, 201);
+        return new ImageResource($image);
     }
 
     public function get(Request $request)
@@ -50,7 +51,12 @@ class ImageController extends Controller
             ], Response::HTTP_NOT_FOUND));
         }
 
+        if (Storage::disk('public')->exists($image->url)) {
+            // Hapus file dari storage
+            Storage::disk('public')->delete($image->url);
+        }
+
         $image->delete();
-        return response()->json(['message' => 'Image deleted'])->status(Response::HTTP_OK);
+        return response()->json(['message' => 'Image deleted'], Response::HTTP_OK);
     }
 }

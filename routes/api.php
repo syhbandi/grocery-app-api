@@ -56,5 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/order', [OrderController::class, 'show']);
 
     // image
-    Route::post('/upload', [ImageController::class, 'upload'])->middleware('ability:admin');
+    Route::post('/uploads', [ImageController::class, 'upload'])->middleware('ability:admin');
+    Route::get('/uploads', [ImageController::class, 'get'])->middleware('ability:admin');
+    Route::delete('/uploads/{id}', [ImageController::class, 'delete'])->where('id', '[0-9]+')->middleware('ability:admin');
 });
