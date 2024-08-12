@@ -29,13 +29,18 @@ class CategoryController extends Controller
             $query->where('name', 'LIKE', '%' . $request->input('search') . '%');
         }
 
-        $categories = $request->has('no_paginate') ? $query->get() : $query->paginate(page: $page, perPage: $size);
+        $categories = $request->has('no_paginate') ? $query->with('images')->get() : $query->with('images')->paginate(page: $page, perPage: $size);
         return CategoryResource::collection($categories);
     }
 
     public function store(StoreCategoryRequest $storeCategoryRequest): CategoryResource
     {
         $category = Category::create($storeCategoryRequest->all());
+
+        if ($storeCategoryRequest->has('images')) {
+            $category->images()->sync($storeCategoryRequest->images);
+        }
+
         return new CategoryResource($category);
     }
 
@@ -48,16 +53,20 @@ class CategoryController extends Controller
         }
 
         $category->update($updateCategoryRequest->all());
+
+        if ($updateCategoryRequest->has('images')) {
+            $category->images()->sync($updateCategoryRequest->images);
+        }
         return new CategoryResource($category);
     }
 
     public function get($id): CategoryResource
     {
-        $category = Category::find($id);
+        $category = Category::find($id)->with('images');
         if (!$category) {
             $this->notFound();
         }
-        return new CategoryResource(Category::find($id));
+        return new CategoryResource($category);
     }
 
     public function products(Request $request, $id)

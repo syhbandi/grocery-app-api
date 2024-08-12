@@ -26,7 +26,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'name' => 'sometimes|required',
-            'image' => 'nullable'
+            'images' => 'array|exists:images,id'
         ];
     }
 
