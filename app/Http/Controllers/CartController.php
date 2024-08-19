@@ -76,7 +76,7 @@ class CartController extends Controller
         $cart = Cart::where('user_id', $user->id)->first();
 
         if (!$cart) {
-            $this->notFound('Cart is Empty');
+            return response()->json(['data' => [], 'message' => 'Cart is empty'], Response::HTTP_OK);
         }
 
         $cartItems = $cart->items()->with('product')->paginate($pageSize);
