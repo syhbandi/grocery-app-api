@@ -12,6 +12,14 @@ use Illuminate\Support\Str;
 
 class ImageController extends Controller
 {
+    public function index()
+    {
+        $query = Image::query();
+        $images = $query->orderBy('created_at', 'desc')->get();
+
+        return ImageResource::collection($images);
+    }
+
     public function upload(Request $request)
     {
         $request->validate([
@@ -33,12 +41,17 @@ class ImageController extends Controller
         return new ImageResource($image);
     }
 
-    public function get(Request $request)
+    public function get($id)
     {
-        $query = Image::query();
-        $images = $query->orderBy('created_at', 'desc')->get();
+        $image = Image::find($id);
 
-        return ImageResource::collection($images);
+        if (!$image) {
+            throw new HttpResponseException(response()->json([
+                'message' => 'Image not found',
+            ], Response::HTTP_NOT_FOUND));
+        }
+
+        return new ImageResource($image);
     }
 
     public function delete($id)
