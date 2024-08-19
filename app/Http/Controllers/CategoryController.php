@@ -62,7 +62,7 @@ class CategoryController extends Controller
 
     public function get($id): CategoryResource
     {
-        $category = Category::find($id)->with('images');
+        $category = Category::with('images')->find($id);
         if (!$category) {
             $this->notFound();
         }
