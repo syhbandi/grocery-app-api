@@ -59,11 +59,24 @@ class OrderController extends Controller
         return OrderResource::collection($order);
     }
 
-    public function showItems(Request $request)
+    public function showItems(Request $request, $id)
     {
         $size = $request->input('size');
-        $user = Auth::user();
-        $orderItems = Order::with('items.product')->where('user_id', $user->id)->paginate($size);
+        $orderItems = OrderItem::with('product')->where('order_id', $id)->paginate($size);
         return OrderItemResource::collection($orderItems);
+    }
+
+    public function index(Request $request)
+    {
+        $size = $request->input('size', 10);
+        $search = $request->input('search');
+
+        $orders = Order::whereHas('user', function ($query) use ($search) {
+            if ($search) {
+                $query->where('full_name', 'like', '%' . $search . '%');
+            }
+        })->with('items.product')->paginate($size);
+
+        return OrderResource::collection($orders);
     }
 }

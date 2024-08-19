@@ -52,11 +52,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart', [CartController::class, 'remove']);
 
     // order
-    Route::post('/order', [OrderController::class, 'store']);
-    Route::get('/order', [OrderController::class, 'show']);
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders', [OrderController::class, 'show']);
+    Route::get('/orders/{id}', [OrderController::class, 'showItems'])->where('id', '[0-9]+');
+    Route::get('/orders/all', [OrderController::class, 'index'])->middleware('ability:admin');
 
     // image
     Route::post('/uploads', [ImageController::class, 'upload'])->middleware('ability:admin');
-    Route::get('/uploads', [ImageController::class, 'get'])->middleware('ability:admin');
+    Route::get('/uploads', [ImageController::class, 'index'])->middleware('ability:admin');
+    Route::get('/uploads/{id}', [ImageController::class, 'get'])->where('id', '[0-9]+')->middleware('ability:admin');
     Route::delete('/uploads/{id}', [ImageController::class, 'delete'])->where('id', '[0-9]+')->middleware('ability:admin');
 });
