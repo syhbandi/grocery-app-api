@@ -14,6 +14,27 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        $size = $request->input('size', 10);
+        $search = $request->input('search');
+        $user = Auth::user();
+        $query = Order::query();
+
+        if ($user->role !== 'admin') {
+            $query->where('user_id', $user->id);
+        }
+
+        $orders = $query->whereHas('user', function ($query) use ($search) {
+            if ($search) {
+                $query->where('full_name', 'like', '%' . $search . '%');
+            }
+        })->with('items.product')->paginate($size);
+
+        return OrderResource::collection($orders);
+    }
+
     private function notFound($msg = '')
     {
         throw new HttpResponseException(response()->json([
@@ -51,32 +72,21 @@ class OrderController extends Controller
         return new OrderResource($order);
     }
 
-    public function show(Request $request)
+    public function get($id)
     {
-        $size = $request->input('size');
         $user = Auth::user();
-        $order = Order::where('user_id', $user->id)->paginate($size);
-        return OrderResource::collection($order);
-    }
+        $query = Order::query();
 
-    public function showItems(Request $request, $id)
-    {
-        $size = $request->input('size');
-        $orderItems = OrderItem::with('product')->where('order_id', $id)->paginate($size);
-        return OrderItemResource::collection($orderItems);
-    }
+        if ($user->role !== 'admin') {
+            $query->where('user_id', $user->id);
+        }
 
-    public function index(Request $request)
-    {
-        $size = $request->input('size', 10);
-        $search = $request->input('search');
+        $order = $query->with('items.product.images')->where('id', $id)->first();
 
-        $orders = Order::whereHas('user', function ($query) use ($search) {
-            if ($search) {
-                $query->where('full_name', 'like', '%' . $search . '%');
-            }
-        })->with('items.product')->paginate($size);
+        if (!$order) {
+            $this->notFound('Order not found');
+        }
 
-        return OrderResource::collection($orders);
+        return new OrderResource($order);
     }
 }
